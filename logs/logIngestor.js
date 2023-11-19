@@ -257,24 +257,49 @@ app.get('/allLogs', (req, res) => {
 //   }
 // });
 
+// app.post('/search', async (req, res) => {
+//     const { searchQuery } = req.body;
+  
+//     try {
+//       const searchResults = trie.get(searchQuery);
+  
+//       if (searchResults.length === 0) {
+//         // No valid input found
+//         res.status(404).json({ error: 'No valid input found.' });
+//       } else {
+//         console.log('Search results:', searchResults);
+//         res.status(200).json(searchResults);
+//       }
+//     } catch (error) {
+//       console.error('Error during search:', error);
+//       res.status(500).send('Internal Server Error');
+//     }
+//   });
+
 app.post('/search', async (req, res) => {
-    const { searchQuery } = req.body;
-  
-    try {
-      const searchResults = trie.get(searchQuery);
-  
-      if (searchResults.length === 0) {
-        // No valid input found
-        res.status(404).json({ error: 'No valid input found.' });
+  const { searchQuery } = req.body;
+
+  try {
+      // Check if searchQuery is provided and related to the 'message' field
+      if (searchQuery && typeof searchQuery === 'string') {
+          const searchResults = trie.get(searchQuery);
+
+          if (searchResults.length === 0) {
+              // No valid input found
+              res.status(404).json({ error: 'No valid input found.' });
+          } else {
+              console.log('Search results:', searchResults);
+              res.status(200).json(searchResults);
+          }
       } else {
-        console.log('Search results:', searchResults);
-        res.status(200).json(searchResults);
+          // Invalid search query
+          res.status(400).json({ error: 'Invalid search query.' });
       }
-    } catch (error) {
+  } catch (error) {
       console.error('Error during search:', error);
       res.status(500).send('Internal Server Error');
-    }
-  });
+  }
+});
   
 app.post('/logs', async (req, res) => {
   const logEntry = req.body;
