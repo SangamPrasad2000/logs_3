@@ -89,6 +89,9 @@ const exampleLogs = [
         "timestamp": "2023-11-19T13:00:00.000Z"
       }
 ];
+
+
+//bonus features
 //1.
 app.post('/search', async (req, res) => {
     const { searchQuery, startDate, endDate, useRegex, filters } = req.body;
@@ -100,13 +103,10 @@ app.post('/search', async (req, res) => {
         if (filters) {
             Object.entries(filters).forEach(([key, value]) => {
                 if (key === 'message') {
-                    // Use regular expression for message filter
                     query[key] = new RegExp(value, 'i');
                 } else if (key === 'startDate' || key === 'endDate') {
-                    // Convert date strings to Date objects
                     query.timestamp = { ...(query.timestamp || {}), [key === 'startDate' ? '$gte' : '$lte']: new Date(value) };
                 } else {
-                    // Exact match for other fields
                     query[key] = value;
                 }
             });
@@ -124,7 +124,6 @@ app.post('/search', async (req, res) => {
             }
         }
 
-        // Use regular expressions if specified
         if (useRegex) {
             query.message = new RegExp(searchQuery, 'i');
         }
@@ -132,7 +131,6 @@ app.post('/search', async (req, res) => {
         const searchResults = await Log.find(query);
 
         if (searchResults.length === 0) {
-            // No valid input found
             res.status(404).json({ error: 'No valid input found.' });
         } else {
             console.log('Search results:', searchResults);
@@ -152,17 +150,15 @@ app.post('/search', async (req, res) => {
     try {
       let query = {};
   
-      // Construct the query based on filters
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
           if (key === 'message') {
-            // Use regular expression for message filter
             query[key] = new RegExp(value, 'i');
           } else if (key === 'startDate' || key === 'endDate') {
-            // Convert date strings to Date objects
+
             query.timestamp = { ...(query.timestamp || {}), [key === 'startDate' ? '$gte' : '$lte']: new Date(value) };
           } else {
-            // Exact match for other fields
+           
             query[key] = value;
           }
         });
@@ -171,7 +167,6 @@ app.post('/search', async (req, res) => {
       const searchResults = await Log.find(query);
   
       if (searchResults.length === 0) {
-        // No valid input found
         res.status(404).json({ error: 'No valid input found.' });
       } else {
         console.log('Search results:', searchResults);
@@ -209,8 +204,6 @@ passport.use(new JwtStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: secretKey,
 }, (jwtPayload, done) => {
-  // Implement your logic to check user roles based on jwtPayload
-  // For simplicity, assume that the roles are stored in jwtPayload.roles
   if (jwtPayload.roles.includes('admin')) {
     return done(null, jwtPayload);
   } else {
@@ -222,10 +215,6 @@ app.use(passport.initialize());
 
 // Route for authentication and getting JWT
 app.post('/login', (req, res) => {
-  // Implement your authentication logic
-  // ...
-
-  // For simplicity, assume successful authentication
   const user = { username: 'admin', roles: ['admin'] };
   const token = jwt.sign(user, secretKey, { expiresIn: '1h' });
 
